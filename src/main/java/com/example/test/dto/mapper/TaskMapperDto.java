@@ -6,7 +6,8 @@ import com.example.test.model.Task;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TaskMapperDto implements RequestMapperDto<TaskRequestDto, Task>, ResponseMapperDto<TaskResponseDto, Task> {
+public class TaskMapperDto implements RequestMapperDto<TaskRequestDto, Task>,
+    ResponseMapperDto<TaskResponseDto, Task> {
 
     @Override
     public Task toModel(TaskRequestDto taskRequestDto) {
@@ -27,24 +28,5 @@ public class TaskMapperDto implements RequestMapperDto<TaskRequestDto, Task>, Re
 
         return taskResponseDto;
     }
-
-    /*
-    public TaskResponseDto parse(Task task) {
-        TaskResponseDto taskResponseDto = new TaskResponseDto();
-        taskResponseDto.setId(task.getId());
-        taskResponseDto.setName(task.getName());
-        taskResponseDto.setDescription(task.getDescription());
-        taskResponseDto.setStatus(task.getStatus());
-
-        return taskResponseDto;
-    }
-
-    public Task toModel(TaskRequestDto requestDto) {
-        Task task = new Task();
-        task.setName(requestDto.getName());
-        task.setDescription(requestDto.getDescription());
-        task.setStatus(requestDto.getStatus());
-        return task;
-    }*/
 
 }

@@ -3,7 +3,6 @@ package com.example.test.dto;
 import com.example.test.model.Status;
 import com.sun.istack.NotNull;
 import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

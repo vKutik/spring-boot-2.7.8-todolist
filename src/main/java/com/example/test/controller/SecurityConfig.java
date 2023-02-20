@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withDefaultPasswordEncoder()
@@ -34,5 +35,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }

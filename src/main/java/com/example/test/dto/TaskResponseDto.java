@@ -1,7 +1,6 @@
 package com.example.test.dto;
 
 import com.example.test.model.Status;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

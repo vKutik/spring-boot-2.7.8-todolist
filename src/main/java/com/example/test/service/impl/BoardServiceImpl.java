@@ -51,9 +51,9 @@ public class BoardServiceImpl implements BoardService {
     public Task getTaskByIdFromBoard(Long boardId, Long taskId) {
         Board board = boardRepository.getBoardById(boardId);
         Optional<Task> taskOptional = board.getTasks()
-                .stream()
-                .filter(t -> Objects.equals(t.getId(), taskId))
-                .findFirst();
+            .stream()
+            .filter(t -> Objects.equals(t.getId(), taskId))
+            .findFirst();
         return taskOptional.orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
