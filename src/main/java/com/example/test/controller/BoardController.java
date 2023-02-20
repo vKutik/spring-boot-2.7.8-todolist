@@ -35,7 +35,7 @@ public class BoardController {
         return boardMapperDto.toResponse(boardService.getBoardById(id));
     }
 
-    @GetMapping("/")
+    @GetMapping()
     public List<BoardResponseDto> findAll() {
         Board board = new Board();
         return boardService.getAllBoards()
