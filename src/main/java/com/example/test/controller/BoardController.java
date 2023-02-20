@@ -30,11 +30,6 @@ public class BoardController {
     private final TaskMapperDto taskMapperDto;
     private final BoardMapperDto boardMapperDto;
 
-    @GetMapping(value = "/hello")
-    public String get() {
-        return "Hello";
-    }
-
     @GetMapping("/{id}")
     public BoardResponseDto getByIdBoard(@PathVariable Long id) {
         return boardMapperDto.toResponse(boardService.getBoardById(id));
