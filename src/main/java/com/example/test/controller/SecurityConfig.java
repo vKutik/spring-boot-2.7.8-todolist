@@ -24,6 +24,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+            .antMatchers("/inject").permitAll()
             .anyRequest().authenticated()
             .and()
             .formLogin()
