@@ -4,8 +4,6 @@ import com.example.test.dto.BoardRequestDto;
 import com.example.test.dto.BoardResponseDto;
 import com.example.test.dto.TaskRequestDto;
 import com.example.test.dto.TaskResponseDto;
-import com.example.test.dto.mapper.BoardMapperDto;
-import com.example.test.dto.mapper.TaskMapperDto;
 import com.example.test.model.Board;
 import com.example.test.service.BoardService;
 import java.util.List;
@@ -27,27 +25,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class BoardController {
 
     private final BoardService boardService;
-    private final TaskMapperDto taskMapperDto;
-    private final BoardMapperDto boardMapperDto;
 
     @GetMapping("/{id}")
     public BoardResponseDto getByIdBoard(@PathVariable Long id) {
-        return boardMapperDto.toResponse(boardService.getBoardById(id));
+        return new BoardResponseDto(boardService.getBoardById(id));
     }
 
     @GetMapping()
     public List<BoardResponseDto> findAll() {
         Board board = new Board();
-        return boardService.getAllBoards()
+        return boardService
+            .getAllBoards()
             .stream()
-            .map(boardMapperDto::toResponse)
+            .map(b -> new BoardResponseDto(board))
             .collect(Collectors.toList());
     }
 
     @PostMapping
     public BoardResponseDto createBoard(@RequestBody @Valid BoardRequestDto boardRequestDto) {
-        return boardMapperDto.toResponse(
-            boardService.insert(boardMapperDto.toModel(boardRequestDto)));
+        return new BoardResponseDto(boardService.insert(boardRequestDto.toModel()));
     }
 
     @DeleteMapping("/{id}")
@@ -58,25 +54,25 @@ public class BoardController {
     @PutMapping("/{id}")
     public BoardResponseDto updateBoard(@PathVariable Long id,
         @RequestBody BoardRequestDto boardRequestDto) {
-        Board board = boardMapperDto.toModel(boardRequestDto);
+        Board board = boardRequestDto.toModel();
         board.setId(id);
-        return boardMapperDto.toResponse(boardService.insert(board));
+        return new BoardResponseDto(boardService.insert(board));
     }
 
     @PostMapping("/{id}/task")
     public BoardResponseDto addTaskForBoard(@PathVariable Long id,
         @RequestBody TaskRequestDto taskRequestDto) {
-        return boardMapperDto.toResponse(
-            boardService.addTaskToBoard(id, taskMapperDto.toModel(taskRequestDto)));
+        return new BoardResponseDto(
+            boardService.addTaskToBoard(id, taskRequestDto.toModel()));
     }
 
     @PutMapping("/{boardId}/task/{taskId}")
     public TaskResponseDto updateTaskFromBoard(@PathVariable Long boardId,
         @PathVariable Long taskId,
         @RequestBody TaskRequestDto taskRequestDto) {
-        return taskMapperDto.toResponse(
+        return new TaskResponseDto(
             boardService.updateTaskFromBoard(boardId, taskId,
-                taskMapperDto.toModel(taskRequestDto)));
+                taskRequestDto.toModel()));
     }
 
     @DeleteMapping("/{boardId}/task/{taskId}")
@@ -87,12 +83,15 @@ public class BoardController {
     @GetMapping("/{boardId}/task/{taskId}")
     public TaskResponseDto getTaskByIdFromBoard(@PathVariable Long boardId,
         @PathVariable Long taskId) {
-        return taskMapperDto.toResponse(boardService.getTaskByIdFromBoard(boardId, taskId));
+        return new TaskResponseDto(boardService.getTaskByIdFromBoard(boardId, taskId));
     }
 
     @GetMapping("/{id}/task")
     public List<TaskResponseDto> getAllTasksFromBoard(@PathVariable Long id) {
-        return boardService.getAllTaskFromBoard(id).stream().map(taskMapperDto::toResponse)
+        return boardService
+            .getAllTaskFromBoard(id)
+            .stream()
+            .map(TaskResponseDto::new)
             .collect(Collectors.toList());
     }
 }
