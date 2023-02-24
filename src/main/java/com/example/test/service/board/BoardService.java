@@ -1,4 +1,4 @@
-package com.example.test.service;
+package com.example.test.service.board;
 
 import com.example.test.model.Board;
 import com.example.test.model.Task;
@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface BoardService {
 
-    Board insert(Board board);
+    Board create(Board board);
+
+    Board update(Board board, Long id);
 
     void deleteBoardById(Long id);
 

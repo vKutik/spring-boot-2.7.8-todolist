@@ -1,4 +1,4 @@
-package com.example.test.dto;
+package com.example.test.dto.board;
 
 import com.example.test.model.Board;
 import com.example.test.model.Task;
