@@ -1,11 +1,12 @@
 package com.example.test.controller;
 
-import com.example.test.dto.BoardRequestDto;
-import com.example.test.dto.BoardResponseDto;
-import com.example.test.dto.TaskRequestDto;
-import com.example.test.dto.TaskResponseDto;
+import com.example.test.dto.board.BoardRequestDto;
+import com.example.test.dto.board.BoardResponseDto;
+import com.example.test.dto.task.TaskRequestDto;
+import com.example.test.dto.task.TaskResponseDto;
 import com.example.test.model.Board;
-import com.example.test.service.BoardService;
+import com.example.test.service.board.BoardService;
+import com.example.test.service.user.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -26,24 +27,26 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    private final UserService userService;
+
     @GetMapping("/{id}")
     public BoardResponseDto getByIdBoard(@PathVariable Long id) {
         return new BoardResponseDto(boardService.getBoardById(id));
     }
 
-    @GetMapping()
+    @GetMapping
     public List<BoardResponseDto> findAll() {
-        Board board = new Board();
         return boardService
             .getAllBoards()
             .stream()
-            .map(b -> new BoardResponseDto(board))
+            .map(BoardResponseDto::new)
             .collect(Collectors.toList());
     }
 
     @PostMapping
     public BoardResponseDto createBoard(@RequestBody @Valid BoardRequestDto boardRequestDto) {
-        return new BoardResponseDto(boardService.insert(boardRequestDto.toModel()));
+
+        return new BoardResponseDto(boardService.create(boardRequestDto.toModel()));
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +59,7 @@ public class BoardController {
         @RequestBody BoardRequestDto boardRequestDto) {
         Board board = boardRequestDto.toModel();
         board.setId(id);
-        return new BoardResponseDto(boardService.insert(board));
+        return new BoardResponseDto(boardService.create(board));
     }
 
     @PostMapping("/{id}/task")

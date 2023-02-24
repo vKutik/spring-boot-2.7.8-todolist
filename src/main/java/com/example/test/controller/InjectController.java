@@ -1,10 +1,12 @@
 package com.example.test.controller;
 
 import com.example.test.model.User;
-import com.example.test.service.RoleService;
-import com.example.test.service.UserService;
+import com.example.test.service.role.RoleService;
+import com.example.test.service.user.UserService;
 import java.util.Set;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +36,12 @@ public class InjectController {
         user.setUsername("user");
         user.setPassword(passwordEncoder.encode("123123"));
         user.setRoles(Set.of(roleService.getByName("USER")));
-        userService.save(user);
+        userService.create(user);
         return "inject";
+    }
+
+    @GetMapping("/user")
+    public String getUser() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

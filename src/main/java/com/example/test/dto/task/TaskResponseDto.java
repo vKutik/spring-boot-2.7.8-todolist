@@ -1,6 +1,5 @@
-package com.example.test.dto;
+package com.example.test.dto.task;
 
-import com.example.test.model.Board;
 import com.example.test.model.Status;
 import com.example.test.model.Task;
 import lombok.Data;
@@ -14,7 +13,6 @@ public class TaskResponseDto {
     private String name;
     private String description;
     private Status status = Status.HOLD;
-
 
     public TaskResponseDto(Task task) {
         this.id = task.getId();

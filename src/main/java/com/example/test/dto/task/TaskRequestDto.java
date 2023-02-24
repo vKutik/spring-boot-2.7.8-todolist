@@ -1,4 +1,4 @@
-package com.example.test.dto;
+package com.example.test.dto.task;
 
 import com.example.test.model.Status;
 import com.example.test.model.Task;
@@ -17,12 +17,11 @@ public class TaskRequestDto {
     private String description;
     private Status status = Status.HOLD;
 
-
     public Task toModel() {
         Task task = new Task();
         task.setName(name);
         task.setDescription(description);
         task.setStatus(status);
+        return task;
     }
-
 }

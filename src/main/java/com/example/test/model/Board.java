@@ -23,8 +23,11 @@ public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
     @Column(unique = true)
     private String name;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "task_id", value = ConstraintMode.NO_CONSTRAINT))
     private List<Task> tasks;
