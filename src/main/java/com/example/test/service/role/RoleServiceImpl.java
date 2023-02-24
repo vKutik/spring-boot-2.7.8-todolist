@@ -1,17 +1,15 @@
-package com.example.test.service.impl;
+package com.example.test.service.role;
 
 import com.example.test.model.Role;
-import com.example.test.repository.RoleRepository;
-import com.example.test.service.RoleService;
+import com.example.test.service.repository.RoleRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@AllArgsConstructor
 @Service
 public class RoleServiceImpl implements RoleService {
-    private final RoleRepository roleRepository;
 
-    public RoleServiceImpl(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
+    private final RoleRepository roleRepository;
 
     @Override
     public Role createByName(String name) {
@@ -22,6 +20,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getByName(String name) {
-        return roleRepository.getRoleByName(name);
+        return roleRepository.getRoleByName(name)
+            .orElseThrow(() -> new IllegalArgumentException("Cannot find role with name: " + name));
     }
 }
