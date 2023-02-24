@@ -1,18 +1,14 @@
-package com.example.test.service.impl;
-
+package com.example.test.service.board;
 
 import com.example.test.model.Board;
 import com.example.test.model.Task;
-import com.example.test.repository.BoardRepository;
-import com.example.test.service.BoardService;
-import com.example.test.service.TaskService;
+import com.example.test.service.repository.BoardRepository;
+import com.example.test.service.task.TaskService;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
 @Service
 public class BoardServiceImpl implements BoardService {
 
@@ -20,9 +16,22 @@ public class BoardServiceImpl implements BoardService {
 
     private final TaskService taskService;
 
+    public BoardServiceImpl(BoardRepository boardRepository, TaskService taskService) {
+        this.boardRepository = boardRepository;
+        this.taskService = taskService;
+    }
+
     @Override
-    public Board insert(Board board) {
+    public Board create(Board board) {
         return boardRepository.save(board);
+    }
+
+    @Override
+    public Board update(Board board, Long id) {
+        Board boardFromDb = getBoardById(id);
+        boardFromDb.setName(board.getName());
+        boardFromDb.setTasks(board.getTasks());
+        return boardFromDb;
     }
 
     @Override
@@ -32,7 +41,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board getBoardById(Long id) {
-        return boardRepository.getReferenceById(id);
+        return boardRepository.getBoardById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Board not found"));
     }
 
     @Override
@@ -42,19 +52,20 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board addTaskToBoard(Long boardId, Task task) {
-        Board board = boardRepository.getBoardById(boardId);
-        board.getTasks().add(taskService.insert(task));
+        Board board = getBoardById(boardId);
+        board.getTasks().add(taskService.create(task));
         return boardRepository.save(board);
     }
 
     @Override
     public Task getTaskByIdFromBoard(Long boardId, Long taskId) {
-        Board board = boardRepository.getBoardById(boardId);
-        Optional<Task> taskOptional = board.getTasks()
-                .stream()
-                .filter(t -> Objects.equals(t.getId(), taskId))
-                .findFirst();
-        return taskOptional.orElseThrow(() -> new RuntimeException("Task not found"));
+        Board board = getBoardById(boardId);
+        Optional<Task> tasksOptional = board
+            .getTasks()
+            .stream()
+            .filter(t -> Objects.equals(t.getId(), taskId))
+            .findFirst();
+        return tasksOptional.orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
     @Override
@@ -63,7 +74,7 @@ public class BoardServiceImpl implements BoardService {
         newTask.setName(task.getName());
         newTask.setDescription(task.getDescription());
         newTask.setStatus(task.getStatus());
-        return taskService.insert(newTask);
+        return taskService.update(newTask, taskId);
     }
 
     @Override
@@ -73,6 +84,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<Task> getAllTaskFromBoard(Long boardId) {
-        return boardRepository.getBoardById(boardId).getTasks();
+        return getBoardById(boardId).getTasks();
     }
 }

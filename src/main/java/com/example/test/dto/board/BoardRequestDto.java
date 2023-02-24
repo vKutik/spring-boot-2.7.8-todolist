@@ -1,5 +1,6 @@
-package com.example.test.dto;
+package com.example.test.dto.board;
 
+import com.example.test.model.Board;
 import com.example.test.model.Task;
 import com.sun.istack.NotNull;
 import java.util.List;
@@ -15,5 +16,13 @@ public class BoardRequestDto {
     @Size(min = 3)
     private String name;
     private List<Task> tasks;
+
+    public Board toModel() {
+        Board board = new Board();
+        board.setName(name);
+        board.setTasks(tasks);
+        return board;
+    }
+
 
 }
