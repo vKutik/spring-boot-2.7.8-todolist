@@ -6,23 +6,27 @@ import java.util.List;
 
 public interface BoardService {
 
-    Board create(Board board);
+    Board createBoardByUsername(Board board, String username);
 
-    Board update(Board board, Long id);
+    Board updateBoardById(Board board, Long id);
 
-    void deleteBoardById(Long id);
+    Board updateBoardByIdAndUsername(Board board, Long id, String username);
+
+    void deleteBoardByIdAndUsername(Long id, String username);
 
     Board getBoardById(Long id);
 
-    List<Board> getAllBoards();
+    Board getBoardByIdAndUsername(Long id, String username);
 
-    Board addTaskToBoard(Long boardId, Task task);
+    List<Board> getAllBoardsByUsername(String username);
 
-    Task getTaskByIdFromBoard(Long boardId, Long taskId);
+    Board addTaskToBoardByIdAndUsername(Long boardId, Task task, String username);
 
-    Task updateTaskFromBoard(Long boardId, Long taskId, Task task);
+    Task getTaskByIdAndUsernameFromBoard(Long boardId, Long taskId, String username);
 
-    void deleteTaskFromBoard(Long boardId, Long taskId);
+    Task updateTaskByBoardIdAndUsernameFromBoard(Long boardId, Long taskId, Task task, String username);
 
-    List<Task> getAllTaskFromBoard(Long boardId);
+    void deleteTaskFromBoard(Long boardId, Long taskId, String username);
+
+    List<Task> getAllTaskFromBoardByUsername(Long boardId, String username);
 }

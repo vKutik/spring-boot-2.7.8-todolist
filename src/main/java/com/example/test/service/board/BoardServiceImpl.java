@@ -2,11 +2,13 @@ package com.example.test.service.board;
 
 import com.example.test.model.Board;
 import com.example.test.model.Task;
+import com.example.test.model.User;
 import com.example.test.service.repository.BoardRepository;
 import com.example.test.service.task.TaskService;
+import com.example.test.service.user.UserService;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,27 +18,43 @@ public class BoardServiceImpl implements BoardService {
 
     private final TaskService taskService;
 
-    public BoardServiceImpl(BoardRepository boardRepository, TaskService taskService) {
+    private final UserService userService;
+
+    public BoardServiceImpl(BoardRepository boardRepository, TaskService taskService,
+        UserService userService) {
         this.boardRepository = boardRepository;
         this.taskService = taskService;
+        this.userService = userService;
     }
 
+
     @Override
-    public Board create(Board board) {
+    public Board createBoardByUsername(Board board, String username) {
+        User user = userService.getByUsername(username);
+        board.setUser(user);
         return boardRepository.save(board);
     }
 
     @Override
-    public Board update(Board board, Long id) {
+    public Board updateBoardById(Board board, Long id) {
         Board boardFromDb = getBoardById(id);
         boardFromDb.setName(board.getName());
         boardFromDb.setTasks(board.getTasks());
-        return boardFromDb;
+        return boardRepository.save(boardFromDb);
     }
 
     @Override
-    public void deleteBoardById(Long id) {
-        boardRepository.deleteById(id);
+    public Board updateBoardByIdAndUsername(Board board, Long boardId, String username) {
+        Board boardFromDb = getBoardByIdAndUsername(boardId, username);
+        boardFromDb.setName(board.getName());
+        boardFromDb.setTasks(board.getTasks());
+        return updateBoardById(boardFromDb, boardId);
+    }
+
+    @Override
+    public void deleteBoardByIdAndUsername(Long boardId, String username) {
+        Board board = getBoardByIdAndUsername(boardId, username);
+        boardRepository.deleteById(board.getId());
     }
 
     @Override
@@ -46,44 +64,73 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<Board> getAllBoards() {
-        return boardRepository.findAll();
+    public Board getBoardByIdAndUsername(Long id, String username) {
+        Board board = getBoardById(id);
+        if (checkUsernameFromBoard(board, username)) {
+            return board;
+        }
+        throw new IllegalArgumentException("Board not found");
     }
 
     @Override
-    public Board addTaskToBoard(Long boardId, Task task) {
-        Board board = getBoardById(boardId);
-        board.getTasks().add(taskService.create(task));
-        return boardRepository.save(board);
+    public List<Board> getAllBoardsByUsername(String username) {
+        return boardRepository
+            .findAll()
+            .stream()
+            .filter(b -> checkUsernameFromBoard(b, username))
+            .collect(Collectors.toList());
     }
 
     @Override
-    public Task getTaskByIdFromBoard(Long boardId, Long taskId) {
-        Board board = getBoardById(boardId);
-        Optional<Task> tasksOptional = board
+    public Board addTaskToBoardByIdAndUsername(Long boardId, Task task, String username) {
+        Board board = getBoardByIdAndUsername(boardId, username);
+        Task taskCreated = taskService.create(task);
+        List<Task> tasks = board.getTasks();
+        tasks.add(taskCreated);
+        return updateBoardById(board, board.getId());
+    }
+
+    @Override
+    public Task getTaskByIdAndUsernameFromBoard(Long boardId, Long taskId, String username) {
+        Board board = getBoardByIdAndUsername(boardId, username);
+
+        Task task = board
             .getTasks()
             .stream()
             .filter(t -> Objects.equals(t.getId(), taskId))
-            .findFirst();
-        return tasksOptional.orElseThrow(() -> new RuntimeException("Task not found"));
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+
+        return taskService.getById(task.getId());
     }
 
     @Override
-    public Task updateTaskFromBoard(Long boardId, Long taskId, Task task) {
-        Task newTask = getTaskByIdFromBoard(boardId, taskId);
-        newTask.setName(task.getName());
-        newTask.setDescription(task.getDescription());
-        newTask.setStatus(task.getStatus());
-        return taskService.update(newTask, taskId);
+    public Task updateTaskByBoardIdAndUsernameFromBoard(Long boardId, Long taskId, Task task,
+        String username) {
+        Task taskFromDb = getTaskByIdAndUsernameFromBoard(boardId, taskId,
+            username);
+        taskFromDb.setName(task.getName());
+        taskFromDb.setDescription(task.getDescription());
+        taskFromDb.setStatus(task.getStatus());
+        return taskService.update(task, taskId);
     }
 
     @Override
-    public void deleteTaskFromBoard(Long boardId, Long taskId) {
-        taskService.deleteById(getTaskByIdFromBoard(boardId, taskId).getId());
+    public void deleteTaskFromBoard(Long boardId, Long taskId, String username) {
+        Task task = getTaskByIdAndUsernameFromBoard(boardId, taskId,
+            username);
+        taskService.deleteById(task.getId());
     }
 
     @Override
-    public List<Task> getAllTaskFromBoard(Long boardId) {
-        return getBoardById(boardId).getTasks();
+    public List<Task> getAllTaskFromBoardByUsername(Long boardId, String username) {
+        Board board = getBoardByIdAndUsername(boardId, username);
+        return board.getTasks();
     }
+
+
+    private boolean checkUsernameFromBoard(Board board, String username) {
+        return Objects.equals(board.getUser().getUsername(), username);
+    }
+
 }

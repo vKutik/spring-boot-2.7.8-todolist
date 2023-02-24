@@ -8,6 +8,7 @@ import com.example.test.model.User;
 import com.example.test.service.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +33,6 @@ public class UserServiceImpl implements UserService {
         userFromDb.setUsername(user.getUsername());
         userFromDb.setPassword(user.getPassword());
         userFromDb.setRoles(user.getRoles());
-        userFromDb.setBoards(user.getBoards());
         return userFromDb;
     }
 
@@ -58,11 +58,4 @@ public class UserServiceImpl implements UserService {
         return new ArrayList<>(userRepository.findAll());
     }
 
-    @Override
-    public Board addBoardToUser(Long userId, Board board) {
-        User user = getById(userId);
-        user.addBoard(board);
-        update(user, user.getId());
-        return board;
-    }
 }

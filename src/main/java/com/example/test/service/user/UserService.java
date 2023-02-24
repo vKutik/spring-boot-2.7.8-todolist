@@ -3,6 +3,7 @@ package com.example.test.service.user;
 import com.example.test.model.Board;
 import com.example.test.model.User;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -17,5 +18,4 @@ public interface UserService {
 
     List<User> findAll();
 
-    Board addBoardToUser(Long userId, Board board);
 }

@@ -27,16 +27,7 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "board_id", value = ConstraintMode.NO_CONSTRAINT))
-    private List<Board> boards;
-
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
-
-    public void addBoard(Board board) {
-        this.boards.add(board);
-    }
 
 }
