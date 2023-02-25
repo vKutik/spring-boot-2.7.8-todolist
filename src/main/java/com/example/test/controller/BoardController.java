@@ -122,7 +122,7 @@ public class BoardController {
     public List<TaskResponseDto> getAllTasksFromBoard(@PathVariable Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return boardService
-            .getAllTaskFromBoardByUsername(id,username)
+            .getAllTaskFromBoardByUsername(id, username)
             .stream()
             .map(TaskResponseDto::new)
             .collect(Collectors.toList());
